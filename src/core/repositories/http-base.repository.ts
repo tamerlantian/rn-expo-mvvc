@@ -11,7 +11,7 @@ export class HttpBaseRepository {
 
   constructor(config?: ApiConfig) {
     this.baseUrl = config?.baseUrl || environment.apiBase;
-    
+
     this.axiosInstance = axios.create({
       baseURL: this.baseUrl,
       timeout: config?.timeout || environment.timeout,
@@ -23,24 +23,24 @@ export class HttpBaseRepository {
 
     // Add request interceptor for handling tokens, etc.
     this.axiosInstance.interceptors.request.use(
-      (config) => {
+      config => {
         // You can modify the request config here (add auth tokens, etc.)
         return config;
       },
-      (error) => {
+      error => {
         return Promise.reject(error);
-      }
+      },
     );
 
     // Add response interceptor for handling errors
     this.axiosInstance.interceptors.response.use(
-      (response) => {
+      response => {
         return response;
       },
-      (error) => {
+      error => {
         // Handle errors globally here
         return Promise.reject(error);
-      }
+      },
     );
   }
 
@@ -74,14 +74,18 @@ export class HttpBaseRepository {
    * @param options Additional request options
    * @returns Promise with the response data
    */
-  public async get<T>(endpoint: string, params: ApiQueryParametros = {}, options: RequestOptions = {}): Promise<T> {
+  public async get<T>(
+    endpoint: string,
+    params: ApiQueryParametros = {},
+    options: RequestOptions = {},
+  ): Promise<T> {
     const url = this.buildUrl(endpoint);
     const config: AxiosRequestConfig = {
       params,
       headers: options.headers,
       timeout: options.timeout,
     };
-    
+
     const response = await this.axiosInstance.get<T>(url, config);
     return response.data;
   }
@@ -100,7 +104,7 @@ export class HttpBaseRepository {
       params: options.params,
       timeout: options.timeout,
     };
-    
+
     const response = await this.axiosInstance.post<T>(url, data, config);
     return response.data;
   }
@@ -119,7 +123,7 @@ export class HttpBaseRepository {
       params: options.params,
       timeout: options.timeout,
     };
-    
+
     const response = await this.axiosInstance.put<T>(url, data, config);
     return response.data;
   }
@@ -138,7 +142,7 @@ export class HttpBaseRepository {
       params: options.params,
       timeout: options.timeout,
     };
-    
+
     const response = await this.axiosInstance.patch<T>(url, data, config);
     return response.data;
   }
@@ -158,7 +162,7 @@ export class HttpBaseRepository {
       timeout: options.timeout,
       data, // For DELETE with request body
     };
-    
+
     const response = await this.axiosInstance.delete<T>(url, config);
     return response.data;
   }

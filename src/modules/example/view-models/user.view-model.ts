@@ -31,7 +31,7 @@ export const useUser = (id: number) => {
 // Hook para crear un nuevo usuario
 export const useCreateUser = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (userData: Omit<User, 'id'>) => userController.createUser(userData),
     onSuccess: () => {
@@ -44,9 +44,9 @@ export const useCreateUser = () => {
 // Hook para actualizar un usuario
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ id, userData }: { id: number; userData: Partial<User> }) => 
+    mutationFn: ({ id, userData }: { id: number; userData: Partial<User> }) =>
       userController.updateUser(id, userData),
     onSuccess: (data, variables) => {
       // Actualiza la caché para el usuario específico y la lista
@@ -59,7 +59,7 @@ export const useUpdateUser = () => {
 // Hook para eliminar un usuario
 export const useDeleteUser = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (id: number) => userController.deleteUser(id),
     onSuccess: (_, id) => {

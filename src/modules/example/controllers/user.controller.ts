@@ -55,5 +55,5 @@ export const userController = {
       console.error(`Error deleting user with id ${id}:`, error);
       throw error;
     }
-  }
+  },
 };

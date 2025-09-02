@@ -1,5 +1,4 @@
-
-export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export interface ApiConfig {
   baseUrl: string;
@@ -23,7 +22,6 @@ export interface ApiErrorResponse {
   error?: string;
   status?: number;
 }
-
 
 export interface ApiResponse<T> {
   count: number;
