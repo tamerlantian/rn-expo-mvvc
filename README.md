@@ -1,50 +1,99 @@
-# Welcome to your Expo app 👋
+# React Native Expo MVVC Boilerplate 🚀
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Este es un boilerplate para aplicaciones móviles basado en [React Native](https://reactnative.dev/) y [Expo](https://expo.dev), implementando el patrón de arquitectura **MVVC (Model-View-ViewModel-Controller)** con una estructura modular para facilitar el desarrollo escalable y mantenible.
 
-## Get started
+## Características principales
 
-1. Install dependencies
+- ✅ **Arquitectura MVVC**: Separación clara de responsabilidades
+- ✅ **Estructura modular**: Organización del código por módulos funcionales
+- ✅ **Expo Router**: Sistema de navegación basado en archivos
+- ✅ **Redux Toolkit**: Gestión de estado global
+- ✅ **React Query**: Gestión de estado del servidor
+- ✅ **TypeScript**: Tipado estático para prevenir errores
+
+## Estructura del proyecto
+
+```
+├── app/                  # Rutas de la aplicación (Expo Router)
+├── assets/               # Recursos estáticos (imágenes, fuentes, etc.)
+├── src/
+│   ├── modules/          # Módulos funcionales de la aplicación
+│   │   └── [module]/     # Cada módulo sigue la estructura MVVC
+│   │       ├── models/   # Modelos de datos
+│   │       ├── views/    # Componentes de UI
+│   │       ├── viewModels/ # Lógica de presentación
+│   │       └── controllers/ # Lógica de negocio
+│   └── store/            # Configuración de Redux
+└── scripts/              # Scripts de utilidad
+```
+
+## Comenzando
+
+### Requisitos previos
+
+- Node.js (versión 18 o superior)
+- npm o yarn
+- Expo CLI
+
+### Instalación
+
+1. Clona este repositorio
+
+   ```bash
+   git clone [url-del-repositorio]
+   cd rn-expo-mvvc
+   ```
+
+2. Instala las dependencias
 
    ```bash
    npm install
+   # o
+   yarn install
    ```
 
-2. Start the app
+3. Inicia la aplicación
 
    ```bash
-   npx expo start
+   npm start
+   # o
+   yarn start
    ```
 
-In the output, you'll find options to open the app in a
+## Desarrollo con arquitectura MVVC
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Model (Modelo)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Representa los datos y la lógica de negocio. Define cómo se almacenan, manipulan y procesan los datos.
 
-## Get a fresh project
+### View (Vista)
 
-When you're ready, run:
+Componentes de UI puros que muestran información al usuario y envían las interacciones del usuario al ViewModel.
+
+### ViewModel (Modelo de Vista)
+
+Actúa como intermediario entre el Modelo y la Vista. Procesa los datos del Modelo para presentarlos en la Vista y maneja las interacciones del usuario.
+
+### Controller (Controlador)
+
+Maneja la lógica de negocio y la comunicación con servicios externos como APIs.
+
+## Proyecto limpio
+
+Para comenzar con un proyecto limpio, ejecuta:
 
 ```bash
 npm run reset-project
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Este comando moverá el código de ejemplo a un directorio **app-example** y creará un directorio **app** en blanco donde podrás comenzar a desarrollar.
 
-## Learn more
+## Tecnologías principales
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- [React Native](https://reactnative.dev/)
+- [Expo](https://expo.dev)
+- [Expo Router](https://docs.expo.dev/router/introduction/)
+- [Redux Toolkit](https://redux-toolkit.js.org/)
+- [React Query](https://tanstack.com/query/latest)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Axios](https://axios-http.com/)
