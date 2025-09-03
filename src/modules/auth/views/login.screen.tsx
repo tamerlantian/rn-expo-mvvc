@@ -1,27 +1,41 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLogin } from '../view-models/auth.view-model';
 import { FormButton } from './components/FormButton';
-import { FormInput } from './components/FormInput';
+import { FormInputController } from './components/FormInputController';
 import { loginStyles } from '../styles/login.style';
-import { router } from 'expo-router'; // Importado para uso futuro
+import { router } from 'expo-router';
+import { useForm } from 'react-hook-form';
+
+// Definir tipo para el formulario
+type LoginFormValues = {
+  email: string;
+  password: string;
+};
 
 export const LoginScreen = () => {
-  // Estado del formulario
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   // ViewModel para login
   const { login, isLoading, formErrors, clearErrors } = useLogin();
 
-  // Manejar envío del formulario
-  const handleSubmit = () => {
-    clearErrors();
-    login({ email, password });
-  };
+  // Configurar React Hook Form
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<LoginFormValues>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    mode: 'onChange',
+  });
 
-  // Validar formulario
-  const isFormValid = email.trim() !== '' && password.trim() !== '';
+  // Manejar envío del formulario
+  const onSubmit = (data: LoginFormValues) => {
+    clearErrors();
+    login(data);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -35,25 +49,47 @@ export const LoginScreen = () => {
         {/* Mensaje de error general */}
         {formErrors.general && <Text style={loginStyles.errorText}>{formErrors.general}</Text>}
 
+        {/* Mostrar errores del backend si existen */}
+        {formErrors.email && !errors.email && (
+          <Text style={loginStyles.errorText}>{formErrors.email}</Text>
+        )}
+        {formErrors.password && !errors.password && (
+          <Text style={loginStyles.errorText}>{formErrors.password}</Text>
+        )}
+
         {/* Campo de email */}
-        <FormInput
+        <FormInputController<LoginFormValues>
+          control={control}
+          name="email"
           label="Correo electrónico"
           placeholder="Ingresa tu correo electrónico"
           keyboardType="email-address"
           autoCapitalize="none"
-          value={email}
-          onChangeText={setEmail}
-          error={formErrors.email}
+          error={errors.email}
+          rules={{
+            required: 'El correo electrónico es obligatorio',
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: 'Correo electrónico inválido',
+            },
+          }}
         />
 
         {/* Campo de contraseña */}
-        <FormInput
+        <FormInputController<LoginFormValues>
+          control={control}
+          name="password"
           label="Contraseña"
           placeholder="Ingresa tu contraseña"
           secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          error={formErrors.password}
+          error={errors.password}
+          rules={{
+            required: 'La contraseña es obligatoria',
+            minLength: {
+              value: 6,
+              message: 'La contraseña debe tener al menos 6 caracteres',
+            },
+          }}
         />
 
         {/* Enlace para recuperar contraseña */}
@@ -71,8 +107,8 @@ export const LoginScreen = () => {
         {/* Botón de login */}
         <FormButton
           title="Iniciar Sesión"
-          onPress={handleSubmit}
-          disabled={!isFormValid}
+          onPress={handleSubmit(onSubmit)}
+          disabled={!isValid}
           isLoading={isLoading}
         />
 
