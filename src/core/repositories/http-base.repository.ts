@@ -8,6 +8,8 @@ import {
 } from '../interfaces/api.interface';
 import { handleErrorResponse } from '../interceptors/error.interceptor';
 import tokenService from '../services/token.service';
+import storageService from '@/src/shared/services/storage.service';
+import { AUTH_TOKEN_KEY } from '@/src/shared/constants/localstorage-keys';
 
 /**
  * Base repository for HTTP communications using Axios
@@ -36,13 +38,14 @@ export class HttpBaseRepository {
 
     // Add request interceptor for handling tokens, etc.
     this.axiosInstance.interceptors.request.use(
-      config => {
-        // You can modify the request config here (add auth tokens, etc.)
+      async config => {
+        const token = await storageService.getItem(AUTH_TOKEN_KEY);
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
         return config;
       },
-      error => {
-        return Promise.reject(error);
-      },
+      error => Promise.reject(error),
     );
 
     // Add response interceptor for handling errors

@@ -12,7 +12,7 @@ import { LoginFormValues } from '../interfaces/auth.interface';
 
 export const LoginScreen = () => {
   // ViewModel para login
-  const { login, isLoading, formErrors, clearErrors } = useLogin();
+  const { login, isLoading } = useLogin();
 
   // Configurar React Hook Form
   const {
@@ -29,7 +29,6 @@ export const LoginScreen = () => {
 
   // Manejar envío del formulario
   const onSubmit = (data: LoginFormValues) => {
-    clearErrors();
     login(data);
   };
 
@@ -41,17 +40,6 @@ export const LoginScreen = () => {
         </View>
 
         <Text style={loginStyles.title}>Iniciar Sesión</Text>
-
-        {/* Mensaje de error general */}
-        {formErrors.general && <Text style={loginStyles.errorText}>{formErrors.general}</Text>}
-
-        {/* Mostrar errores del backend si existen */}
-        {formErrors.username && !errors.username && (
-          <Text style={loginStyles.errorText}>{formErrors.username}</Text>
-        )}
-        {formErrors.password && !errors.password && (
-          <Text style={loginStyles.errorText}>{formErrors.password}</Text>
-        )}
 
         {/* Campo de email */}
         <FormInputController<LoginFormValues>

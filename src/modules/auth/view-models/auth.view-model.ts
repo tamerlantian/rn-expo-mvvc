@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { authController } from '../controllers/auth.controller';
 import { AuthState, LoginCredentials } from '../models/Auth';
 import { useToast } from '@/src/shared/hooks/use-toast.hook';
+import { ApiErrorResponse } from '@/src/core/interfaces/api.interface';
 
 // Claves para las queries de React Query
 export const authKeys = {
@@ -33,35 +34,17 @@ export const useCurrentUser = () => {
 export const useLogin = () => {
   const queryClient = useQueryClient();
   const toast = useToast();
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const loginMutation = useMutation({
     mutationFn: (credentials: LoginCredentials) => authController.login(credentials),
     onSuccess: () => {
-      // Actualizar el estado de autenticación y usuario
       queryClient.invalidateQueries({ queryKey: authKeys.session() });
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
-      setFormErrors({});
       toast.success('Inicio de sesión exitoso');
     },
     onError: (error: any) => {
-      // Manejar errores de validación
-      console.log(JSON.stringify(error));
-      if (error.response?.status === 400 && error.response?.data?.validaciones) {
-        const validationErrors: Record<string, string> = {};
-
-        // Mapear errores de validación del backend a campos del formulario
-        Object.entries(error.response.data.validaciones).forEach(([key, value]) => {
-          validationErrors[key] = Array.isArray(value) ? value[0] : String(value);
-        });
-
-        setFormErrors(validationErrors);
-      } else {
-        // Error general
-        setFormErrors({
-          general: error.response?.data?.mensaje || 'Error al iniciar sesión',
-        });
-      }
+      const errorData = error as ApiErrorResponse;
+      toast.error(errorData?.mensaje || 'Error al iniciar sesión');
     },
   });
 
@@ -70,8 +53,6 @@ export const useLogin = () => {
     isLoading: loginMutation.isPending,
     isError: loginMutation.isError,
     error: loginMutation.error,
-    formErrors,
-    clearErrors: () => setFormErrors({}),
   };
 };
 
