@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, SafeAreaView } from 'react-native';
-import { UserList } from '../../src/modules/example/views/user.list';
-import { UserDetail } from '../../src/modules/example/views/user.detail';
-import UserFormSheet, { UserFormSheetRef } from '../../src/modules/example/views/user-form-sheet';
+import { UserList } from '@/src/modules/example/views/user.list';
+import { UserDetail } from '@/src/modules/example/views/user.detail';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
+import UserFormSheet, { UserFormSheetRef } from '@/src/modules/example/views/user-form-sheet';
 
 export default function UsersScreen() {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -24,7 +24,7 @@ export default function UsersScreen() {
   const handleOpenForm = () => {
     userFormRef.current?.open();
   };
-  
+
   // Función para manejar el éxito al crear un usuario
   const handleSuccess = () => {
     // Opcional: Mostrar un mensaje de éxito o realizar alguna acción
@@ -41,27 +41,20 @@ export default function UsersScreen() {
               {selectedUserId ? 'Detalle de Usuario' : 'Lista de Usuarios'}
             </Text>
           </View>
-          
+
           {selectedUserId ? (
             <UserDetail userId={selectedUserId} onBack={handleBack} />
           ) : (
             <>
               <UserList onSelectUser={handleSelectUser} />
-              <TouchableOpacity 
-                style={styles.fab} 
-                onPress={handleOpenForm}
-                activeOpacity={0.8}
-              >
+              <TouchableOpacity style={styles.fab} onPress={handleOpenForm} activeOpacity={0.8}>
                 <Text style={styles.fabText}>+</Text>
               </TouchableOpacity>
             </>
           )}
-          
+
           {/* Bottom Sheet para crear usuarios */}
-          <UserFormSheet 
-            ref={userFormRef} 
-            onSuccess={handleSuccess} 
-          />
+          <UserFormSheet ref={userFormRef} onSuccess={handleSuccess} />
         </View>
       </SafeAreaView>
     </GestureHandlerRootView>
