@@ -46,6 +46,7 @@ export const useLogin = () => {
     },
     onError: (error: any) => {
       // Manejar errores de validación
+      console.log(JSON.stringify(error));
       if (error.response?.status === 400 && error.response?.data?.validaciones) {
         const validationErrors: Record<string, string> = {};
 

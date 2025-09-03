@@ -1,6 +1,13 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { environment } from '../../config/environment';
-import { ApiConfig, ApiQueryParametros, RequestOptions } from '../interfaces/api.interface';
+import {
+  ApiConfig,
+  ApiErrorResponse,
+  ApiQueryParametros,
+  RequestOptions,
+} from '../interfaces/api.interface';
+import { handleErrorResponse } from '../interceptors/error.interceptor';
+import tokenService from '../services/token.service';
 
 /**
  * Base repository for HTTP communications using Axios
@@ -8,6 +15,12 @@ import { ApiConfig, ApiQueryParametros, RequestOptions } from '../interfaces/api
 export class HttpBaseRepository {
   private axiosInstance: AxiosInstance;
   private baseUrl: string;
+  private isRefreshingToken = false;
+  private failedQueue: {
+    resolve: (_value: unknown) => void;
+    reject: (_reason?: any) => void;
+    config: AxiosRequestConfig;
+  }[] = [];
 
   constructor(config?: ApiConfig) {
     this.baseUrl = config?.baseUrl || environment.apiBase;
@@ -33,15 +46,86 @@ export class HttpBaseRepository {
     );
 
     // Add response interceptor for handling errors
+    // Interceptor para manejar errores de respuesta y renovar token si es necesario
     this.axiosInstance.interceptors.response.use(
-      response => {
-        return response;
-      },
-      error => {
-        // Handle errors globally here
-        return Promise.reject(error);
+      (response: AxiosResponse) => response,
+      async (error: AxiosError<ApiErrorResponse>) => {
+        const originalRequest = error.config as AxiosRequestConfig & {
+          _retry?: boolean;
+        };
+
+        // Si es un error 401 (Unauthorized) y no es un reintento
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          // Si ya estamos renovando el token, ponemos la solicitud en cola
+          if (this.isRefreshingToken) {
+            return new Promise((resolve, reject) => {
+              this.failedQueue.push({
+                resolve,
+                reject,
+                config: originalRequest,
+              });
+            });
+          }
+
+          // Marcar que estamos renovando el token
+          this.isRefreshingToken = true;
+          originalRequest._retry = true;
+
+          try {
+            // Intentar renovar el token
+            const newToken = await tokenService.refreshAccessToken();
+
+            // Procesar la cola de solicitudes fallidas
+            this.processQueue(null, newToken);
+
+            // Actualizar el token en la solicitud original y reintentar
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            }
+
+            return this.axiosInstance(originalRequest);
+          } catch (refreshError) {
+            // Si falla la renovación del token, procesar la cola con el error
+            this.processQueue(refreshError, null);
+
+            // Redirigir al login (el tokenService ya se encarga de limpiar los tokens)
+            await tokenService.handleAuthFailure();
+
+            // Transformar el error para mantener consistencia
+            const errorResponse = handleErrorResponse(error);
+            return Promise.reject(errorResponse);
+          } finally {
+            this.isRefreshingToken = false;
+          }
+        }
+
+        // Para otros errores, usar el manejador de errores existente
+        const errorResponse = handleErrorResponse(error);
+        return Promise.reject(errorResponse);
       },
     );
+  }
+
+  /**
+   * Procesa la cola de solicitudes fallidas después de renovar el token
+   * @param error Error que ocurrió
+   * @param token Token renovado
+   */
+  private processQueue(error: any, token: string | null) {
+    this.failedQueue.forEach(({ resolve, reject, config }) => {
+      if (error) {
+        reject(error);
+      } else if (token) {
+        // Actualizar el token en la configuración de la solicitud
+        if (config.headers) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        resolve(this.axiosInstance(config));
+      }
+    });
+
+    // Limpiar la cola
+    this.failedQueue = [];
   }
 
   /**

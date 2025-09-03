@@ -24,7 +24,6 @@ export const authController = {
 
       return response;
     } catch (error) {
-      console.error('Error en login:', error);
       throw error;
     }
   },
