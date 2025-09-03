@@ -1,5 +1,6 @@
-import { Text, View, StyleSheet, ScrollView } from "react-native";
-import { StatusBar } from "expo-status-bar";
+import { Text, View, StyleSheet, ScrollView } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import '../global.css';
 
 export default function Index() {
   return (
@@ -8,8 +9,9 @@ export default function Index() {
       <View style={styles.header}>
         <Text style={styles.title}>React Native MVVC Boilerplate</Text>
         <Text style={styles.subtitle}>Con React Query y Bottom Sheet</Text>
+        <Text className="text-xl font-bold text-red-500"> Welcome to Nativewind!</Text>
       </View>
-      
+
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Características</Text>
         <Text style={styles.cardText}>• Arquitectura MVVC</Text>
@@ -18,10 +20,13 @@ export default function Index() {
         <Text style={styles.cardText}>• Navegación por tabs</Text>
         <Text style={styles.cardText}>• TypeScript</Text>
       </View>
-      
+
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Instrucciones</Text>
-        <Text style={styles.cardText}>Navega a la pestaña &quot;Users&quot; para ver la lista de usuarios y probar el bottom sheet para crear nuevos usuarios.</Text>
+        <Text style={styles.cardText}>
+          Navega a la pestaña &quot;Users&quot; para ver la lista de usuarios y probar el bottom
+          sheet para crear nuevos usuarios.
+        </Text>
       </View>
     </ScrollView>
   );
