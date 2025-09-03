@@ -1,23 +1,24 @@
 import React from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { User } from '../models/User';
 import { useDeleteUser, useUsers } from '../view-models/user.view-model';
 import { userListStyles } from '../styles/user-list.style';
 
 interface UserListProps {
-  onSelectUser?: (userId: number) => void;
+  onSelectUser?: (_userId: number) => void;
 }
 
 export const UserList = ({ onSelectUser }: UserListProps) => {
   // Utilizamos el hook del ViewModel que implementa React Query
-  const { 
-    data: users, 
-    isLoading, 
-    isError, 
-    error, 
-    refetch 
-  } = useUsers();
-  
+  const { data: users, isLoading, isError, error, refetch } = useUsers();
+
   // Hook para eliminar usuarios
   const deleteUserMutation = useDeleteUser();
 
@@ -28,7 +29,7 @@ export const UserList = ({ onSelectUser }: UserListProps) => {
 
   // Renderizado de cada item de la lista
   const renderItem = ({ item }: { item: User }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={userListStyles.userItem}
       onPress={() => onSelectUser && onSelectUser(item.id)}
       activeOpacity={onSelectUser ? 0.7 : 1}
@@ -37,9 +38,9 @@ export const UserList = ({ onSelectUser }: UserListProps) => {
         <Text style={userListStyles.userName}>{item.name}</Text>
         <Text style={userListStyles.userEmail}>{item.email}</Text>
       </View>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={userListStyles.deleteButton}
-        onPress={(e) => {
+        onPress={e => {
           e.stopPropagation();
           handleDeleteUser(item.id);
         }}
@@ -77,13 +78,8 @@ export const UserList = ({ onSelectUser }: UserListProps) => {
       <FlatList
         data={users}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-        refreshControl={
-          <RefreshControl 
-            refreshing={isLoading} 
-            onRefresh={refetch} 
-          />
-        }
+        keyExtractor={item => item.id.toString()}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} />}
         ListEmptyComponent={
           <Text style={userListStyles.emptyText}>No hay usuarios disponibles</Text>
         }
