@@ -4,6 +4,7 @@ import { authController } from '../controllers/auth.controller';
 import { AuthState, LoginCredentials } from '../models/Auth';
 import { useToast } from '@/src/shared/hooks/use-toast.hook';
 import { ApiErrorResponse } from '@/src/core/interfaces/api.interface';
+import { useRouter } from 'expo-router';
 
 // Claves para las queries de React Query
 export const authKeys = {
@@ -34,12 +35,14 @@ export const useCurrentUser = () => {
 export const useLogin = () => {
   const queryClient = useQueryClient();
   const toast = useToast();
+  const router = useRouter();
 
   const loginMutation = useMutation({
     mutationFn: (credentials: LoginCredentials) => authController.login(credentials),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.session() });
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
+      router.replace('/(app)/(tabs)');
       toast.success('Inicio de sesión exitoso');
     },
     onError: (error: any) => {

@@ -1,18 +1,35 @@
+import CustomBottomSheet from '@/src/shared/components/bottom-sheet/bottom-sheet';
+import { DevModeSelector } from '@/src/shared/components/bottom-sheet/dev-mode-selector';
+import { FormButton } from '@/src/shared/components/ui/button/FormButton';
+import { FormInputController } from '@/src/shared/components/ui/form/FormInputController';
+import { PasswordInputController } from '@/src/shared/components/ui/form/PasswordInputController';
+import { Ionicons } from '@expo/vector-icons';
+import BottomSheet from '@gorhom/bottom-sheet';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { FormButton } from '@/src/shared/components/ui/button/FormButton';
-import { FormInputController } from '@/src/shared/components/ui/form/FormInputController';
+import { LoginFormValues } from '../interfaces/auth.interface';
 import { loginStyles } from '../styles/login.style';
 import { useLogin } from '../view-models/auth.view-model';
-import { PasswordInputController } from '@/src/shared/components/ui/form/PasswordInputController';
-import { LoginFormValues } from '../interfaces/auth.interface';
 
 export const LoginScreen = () => {
   // ViewModel para login
   const { login, isLoading } = useLogin();
+
+  // Referencia al bottom sheet
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  // Función para abrir el bottom sheet
+  const handleOpenDevModeSheet = () => {
+    bottomSheetRef.current?.expand();
+  };
+
+  // Función para cerrar el bottom sheet
+  const handleCloseDevModeSheet = () => {
+    bottomSheetRef.current?.close();
+  };
 
   // Configurar React Hook Form
   const {
@@ -34,6 +51,11 @@ export const LoginScreen = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      {/* Botón de modo desarrollador */}
+      <TouchableOpacity style={loginStyles.devModeButton} onPress={handleOpenDevModeSheet}>
+        <Ionicons name="settings" size={24} color="#666" className="mt-6" />
+      </TouchableOpacity>
+
       <ScrollView contentContainerStyle={loginStyles.container} keyboardShouldPersistTaps="handled">
         <View style={loginStyles.logoContainer}>
           <Image source={require('../../../../assets/images/icon.png')} style={loginStyles.logo} />
@@ -106,6 +128,11 @@ export const LoginScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Bottom Sheet para el selector de modo desarrollador */}
+      <CustomBottomSheet ref={bottomSheetRef} initialSnapPoints={['40%']}>
+        <DevModeSelector onClose={handleCloseDevModeSheet} />
+      </CustomBottomSheet>
     </SafeAreaView>
   );
 };

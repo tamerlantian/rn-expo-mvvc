@@ -1,22 +1,22 @@
+import { AUTH_TOKEN_KEY } from '@/src/shared/constants/localstorage-keys';
+import storageService from '@/src/shared/services/storage.service';
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { environment } from '../../config/environment';
+import { handleErrorResponse } from '../interceptors/error.interceptor';
 import {
   ApiConfig,
   ApiErrorResponse,
   ApiQueryParametros,
   RequestOptions,
 } from '../interfaces/api.interface';
-import { handleErrorResponse } from '../interceptors/error.interceptor';
 import tokenService from '../services/token.service';
-import storageService from '@/src/shared/services/storage.service';
-import { AUTH_TOKEN_KEY } from '@/src/shared/constants/localstorage-keys';
 
 /**
  * Base repository for HTTP communications using Axios
  */
 export class HttpBaseRepository {
   private axiosInstance: AxiosInstance;
-  private baseUrl: string;
+  private configBaseUrl?: string; // URL base fija del config (si se proporciona)
   private isRefreshingToken = false;
   private failedQueue: {
     resolve: (_value: unknown) => void;
@@ -25,10 +25,11 @@ export class HttpBaseRepository {
   }[] = [];
 
   constructor(config?: ApiConfig) {
-    this.baseUrl = config?.baseUrl || environment.apiBase;
+    // Guardar la URL base del config si se proporciona
+    this.configBaseUrl = config?.baseUrl;
 
     this.axiosInstance = axios.create({
-      baseURL: this.baseUrl,
+      // No establecer baseURL aquí, se establecerá dinámicamente
       timeout: config?.timeout || environment.timeout,
       headers: {
         'Content-Type': 'application/json',
@@ -39,6 +40,9 @@ export class HttpBaseRepository {
     // Add request interceptor for handling tokens, etc.
     this.axiosInstance.interceptors.request.use(
       async config => {
+        // Establecer la baseURL dinámicamente en cada request
+        config.baseURL = this.getCurrentBaseUrl();
+        console.log('Current baseURL:', config.baseURL);
         const token = await storageService.getItem(AUTH_TOKEN_KEY);
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
@@ -110,6 +114,13 @@ export class HttpBaseRepository {
   }
 
   /**
+   * Obtiene la URL base actual, priorizando el config fijo sobre el environment dinámico
+   */
+  private getCurrentBaseUrl(): string {
+    return this.configBaseUrl || environment.apiBase;
+  }
+
+  /**
    * Procesa la cola de solicitudes fallidas después de renovar el token
    * @param error Error que ocurrió
    * @param token Token renovado
@@ -151,7 +162,8 @@ export class HttpBaseRepository {
     }
     // Normalize the path to avoid double slashes
     const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
-    return `${this.baseUrl}/${normalizedEndpoint}`;
+    const baseUrl = this.getCurrentBaseUrl();
+    return `${baseUrl}/${normalizedEndpoint}`;
   }
 
   /**
