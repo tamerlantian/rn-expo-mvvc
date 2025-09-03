@@ -1,7 +1,7 @@
 import React from 'react';
+import { Control, Controller, FieldError, FieldPath, FieldValues } from 'react-hook-form';
 import { Text, TextInput, TextInputProps, View } from 'react-native';
-import { Controller, Control, FieldValues, FieldPath, FieldError } from 'react-hook-form';
-import { loginStyles } from '../../styles/login.style';
+import { loginStyles } from '../../../../modules/auth/styles/login.style';
 
 interface FormInputControllerProps<T extends FieldValues>
   extends Omit<TextInputProps, 'value' | 'onChangeText'> {

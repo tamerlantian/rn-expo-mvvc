@@ -1,11 +1,11 @@
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRegister } from '../view-models/auth.view-model';
-import { FormButton } from './components/FormButton';
-import { FormInput } from './components/FormInput';
+import { FormButton } from '../../../shared/components/ui/button/FormButton';
+import { FormInput } from '../../../shared/components/ui/form/FormInput';
 import { loginStyles } from '../styles/login.style';
-import { router } from 'expo-router';
+import { useRegister } from '../view-models/auth.view-model';
 
 export const RegisterScreen = () => {
   // Estado del formulario

@@ -1,12 +1,13 @@
+import { router } from 'expo-router';
 import React from 'react';
+import { useForm } from 'react-hook-form';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLogin } from '../view-models/auth.view-model';
-import { FormButton } from './components/FormButton';
-import { FormInputController } from './components/FormInputController';
+import { FormButton } from '../../../shared/components/ui/button/FormButton';
+import { FormInputController } from '../../../shared/components/ui/form/FormInputController';
 import { loginStyles } from '../styles/login.style';
-import { router } from 'expo-router';
-import { useForm } from 'react-hook-form';
+import { useLogin } from '../view-models/auth.view-model';
+import { PasswordInputController } from '@/src/shared/components/ui/form/PasswordInputController';
 
 // Definir tipo para el formulario
 type LoginFormValues = {
@@ -76,12 +77,11 @@ export const LoginScreen = () => {
         />
 
         {/* Campo de contraseña */}
-        <FormInputController<LoginFormValues>
+        <PasswordInputController<LoginFormValues>
           control={control}
           name="password"
           label="Contraseña"
           placeholder="Ingresa tu contraseña"
-          secureTextEntry
           error={errors.password}
           rules={{
             required: 'La contraseña es obligatoria',
@@ -91,7 +91,6 @@ export const LoginScreen = () => {
             },
           }}
         />
-
         {/* Enlace para recuperar contraseña */}
         <TouchableOpacity
           style={loginStyles.forgotPassword}
