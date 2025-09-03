@@ -11,7 +11,7 @@ export class AuthRepository extends HttpBaseRepository {
    * @returns Promise con la respuesta del login
    */
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    return this.post<LoginResponse>('auth/login', credentials);
+    return this.post<LoginResponse>('seguridad/login/', credentials);
   }
 
   /**
@@ -22,7 +22,7 @@ export class AuthRepository extends HttpBaseRepository {
   async register(
     userData: Omit<LoginCredentials, 'token'> & { name: string },
   ): Promise<LoginResponse> {
-    return this.post<LoginResponse>('auth/register', userData);
+    return this.post<LoginResponse>('seguridad/register/', userData);
   }
 
   /**
@@ -31,7 +31,7 @@ export class AuthRepository extends HttpBaseRepository {
    * @returns Promise con el nuevo token
    */
   async refreshToken(refreshToken: string): Promise<RefreshTokenResponse> {
-    return this.post<RefreshTokenResponse>('auth/refresh', { refreshToken });
+    return this.post<RefreshTokenResponse>('seguridad/refresh/', { refreshToken });
   }
 
   /**
@@ -39,14 +39,6 @@ export class AuthRepository extends HttpBaseRepository {
    * @returns Promise con la confirmación del logout
    */
   async logout(): Promise<boolean> {
-    return this.post<boolean>('auth/logout', {});
-  }
-
-  /**
-   * Verifica si el token actual es válido
-   * @returns Promise con la validez del token
-   */
-  async validateToken(): Promise<boolean> {
-    return this.get<boolean>('auth/validate');
+    return this.post<boolean>('seguridad/logout/', {});
   }
 }

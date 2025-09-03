@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { authController } from '../controllers/auth.controller';
 import { AuthState, LoginCredentials } from '../models/Auth';
+import { useToast } from '@/src/shared/hooks/use-toast.hook';
 
 // Claves para las queries de React Query
 export const authKeys = {
@@ -31,6 +32,7 @@ export const useCurrentUser = () => {
 // Hook para manejar el login
 export const useLogin = () => {
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const loginMutation = useMutation({
@@ -40,6 +42,7 @@ export const useLogin = () => {
       queryClient.invalidateQueries({ queryKey: authKeys.session() });
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
       setFormErrors({});
+      toast.success('Inicio de sesión exitoso');
     },
     onError: (error: any) => {
       // Manejar errores de validación

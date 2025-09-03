@@ -1,9 +1,9 @@
 import React, { forwardRef, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import BottomSheet, { 
-  BottomSheetBackdrop, 
-  BottomSheetProps, 
-  BottomSheetScrollView
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetProps,
+  BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
 
 interface CustomBottomSheetProps extends Partial<BottomSheetProps> {
@@ -14,34 +14,32 @@ interface CustomBottomSheetProps extends Partial<BottomSheetProps> {
 }
 
 const CustomBottomSheet = forwardRef<BottomSheet, CustomBottomSheetProps>(
-  ({ 
-    children, 
-    initialSnapPoints = ['25%', '50%', '75%'],
-    showsScrollIndicator = false,
-    useScrollView = true,
-    ...rest 
-  }, ref) => {
+  (
+    {
+      children,
+      initialSnapPoints = ['25%', '50%', '75%'],
+      showsScrollIndicator = false,
+      useScrollView = true,
+      ...rest
+    },
+    ref,
+  ) => {
     // Variables para snapPoints dinámicos
     const initialSnapPointsArray = useMemo(() => initialSnapPoints, [initialSnapPoints]);
-    
+
     // Renderizar el backdrop (fondo oscuro)
     const renderBackdrop = useCallback(
       (props: any) => (
-        <BottomSheetBackdrop
-          {...props}
-          disappearsOnIndex={-1}
-          appearsOnIndex={0}
-          opacity={0.5}
-        />
+        <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.5} />
       ),
-      []
+      [],
     );
 
     // Contenido del bottom sheet
     const renderContent = () => {
       if (useScrollView) {
         return (
-          <BottomSheetScrollView 
+          <BottomSheetScrollView
             showsVerticalScrollIndicator={showsScrollIndicator}
             contentContainerStyle={styles.contentContainer}
           >
@@ -49,12 +47,8 @@ const CustomBottomSheet = forwardRef<BottomSheet, CustomBottomSheetProps>(
           </BottomSheetScrollView>
         );
       }
-      
-      return (
-        <View style={styles.contentContainer}>
-          {children}
-        </View>
-      );
+
+      return <View style={styles.contentContainer}>{children}</View>;
     };
 
     return (
@@ -71,7 +65,7 @@ const CustomBottomSheet = forwardRef<BottomSheet, CustomBottomSheetProps>(
         {renderContent()}
       </BottomSheet>
     );
-  }
+  },
 );
 
 const styles = StyleSheet.create({

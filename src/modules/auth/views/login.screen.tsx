@@ -3,17 +3,12 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { FormButton } from '../../../shared/components/ui/button/FormButton';
-import { FormInputController } from '../../../shared/components/ui/form/FormInputController';
+import { FormButton } from '@/src/shared/components/ui/button/FormButton';
+import { FormInputController } from '@/src/shared/components/ui/form/FormInputController';
 import { loginStyles } from '../styles/login.style';
 import { useLogin } from '../view-models/auth.view-model';
 import { PasswordInputController } from '@/src/shared/components/ui/form/PasswordInputController';
-
-// Definir tipo para el formulario
-type LoginFormValues = {
-  email: string;
-  password: string;
-};
+import { LoginFormValues } from '../interfaces/auth.interface';
 
 export const LoginScreen = () => {
   // ViewModel para login
@@ -26,7 +21,7 @@ export const LoginScreen = () => {
     formState: { errors, isValid },
   } = useForm<LoginFormValues>({
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
     },
     mode: 'onChange',
@@ -51,8 +46,8 @@ export const LoginScreen = () => {
         {formErrors.general && <Text style={loginStyles.errorText}>{formErrors.general}</Text>}
 
         {/* Mostrar errores del backend si existen */}
-        {formErrors.email && !errors.email && (
-          <Text style={loginStyles.errorText}>{formErrors.email}</Text>
+        {formErrors.username && !errors.username && (
+          <Text style={loginStyles.errorText}>{formErrors.username}</Text>
         )}
         {formErrors.password && !errors.password && (
           <Text style={loginStyles.errorText}>{formErrors.password}</Text>
@@ -61,12 +56,12 @@ export const LoginScreen = () => {
         {/* Campo de email */}
         <FormInputController<LoginFormValues>
           control={control}
-          name="email"
+          name="username"
           label="Correo electrónico"
           placeholder="Ingresa tu correo electrónico"
           keyboardType="email-address"
           autoCapitalize="none"
-          error={errors.email}
+          error={errors.username}
           rules={{
             required: 'El correo electrónico es obligatorio',
             pattern: {

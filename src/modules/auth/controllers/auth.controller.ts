@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoginCredentials, LoginResponse, RefreshTokenResponse } from '../models/Auth';
 import { AuthRepository } from '../repositories/auth.repository';
-
-// Claves para almacenamiento local
-const AUTH_TOKEN_KEY = '@auth_token';
-const REFRESH_TOKEN_KEY = '@refresh_token';
-const USER_DATA_KEY = '@user_data';
+import {
+  AUTH_TOKEN_KEY,
+  REFRESH_TOKEN_KEY,
+  USER_DATA_KEY,
+} from '@/src/shared/constants/localstorage-keys';
 
 // Instancia del repositorio de autenticación
 const authRepository = new AuthRepository();
@@ -19,9 +19,7 @@ export const authController = {
 
       // Guardar tokens y datos del usuario en el almacenamiento local
       await AsyncStorage.setItem(AUTH_TOKEN_KEY, response.token);
-      if (response.refreshToken) {
-        await AsyncStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
-      }
+      await AsyncStorage.setItem(REFRESH_TOKEN_KEY, response['refresh-token']);
       await AsyncStorage.setItem(USER_DATA_KEY, JSON.stringify(response.user));
 
       return response;
@@ -40,9 +38,7 @@ export const authController = {
 
       // Guardar tokens y datos del usuario en el almacenamiento local
       await AsyncStorage.setItem(AUTH_TOKEN_KEY, response.token);
-      if (response.refreshToken) {
-        await AsyncStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
-      }
+      await AsyncStorage.setItem(REFRESH_TOKEN_KEY, response['refresh-token']);
       await AsyncStorage.setItem(USER_DATA_KEY, JSON.stringify(response.user));
 
       return response;
@@ -100,7 +96,7 @@ export const authController = {
       if (!token) return false;
 
       // Validar token con el servidor
-      return await authRepository.validateToken();
+      return true;
     } catch (error) {
       console.error('Error al verificar autenticación:', error);
       return false;

@@ -2,24 +2,38 @@
 
 // Interfaz para las credenciales de login
 export interface LoginCredentials {
-  email: string;
+  username: string;
   password: string;
 }
 
 // Interfaz para el usuario autenticado
 export interface AuthUser {
-  id: string;
-  email: string;
-  name: string;
-  token: string;
-  refreshToken?: string;
+  id: number;
+  username: string;
+  imagen: string;
+  nombre_corto: string;
+  nombre: string | null;
+  apellido: string | null;
+  telefono: string | null;
+  correo: string;
+  idioma: string | null;
+  dominio: string;
+  fecha_limite_pago: string;
+  fecha_creacion: string;
+  vr_saldo: number;
+  verificado: boolean;
+  es_socio: boolean;
+  socio_id: string;
+  is_active: boolean;
+  numero_identificacion: string;
+  cargo: string;
 }
 
 // Interfaz para la respuesta de login
 export interface LoginResponse {
   user: AuthUser;
   token: string;
-  refreshToken?: string;
+  'refresh-token': string;
 }
 
 // Interfaz para el estado de autenticación
