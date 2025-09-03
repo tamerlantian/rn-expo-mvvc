@@ -1,5 +1,10 @@
 import { HttpBaseRepository } from '../../../core/repositories/http-base.repository';
-import { LoginCredentials, LoginResponse, RefreshTokenResponse } from '../models/Auth';
+import {
+  LoginCredentials,
+  LoginResponse,
+  RefreshTokenResponse,
+  RegisterCredentials,
+} from '../models/Auth';
 
 /**
  * Repositorio para manejar las operaciones de API relacionadas con autenticación
@@ -19,9 +24,7 @@ export class AuthRepository extends HttpBaseRepository {
    * @param userData Datos del usuario a registrar
    * @returns Promise con la respuesta del registro
    */
-  async register(
-    userData: Omit<LoginCredentials, 'token'> & { name: string },
-  ): Promise<LoginResponse> {
+  async register(userData: RegisterCredentials): Promise<LoginResponse> {
     return this.post<LoginResponse>('seguridad/register/', userData);
   }
 

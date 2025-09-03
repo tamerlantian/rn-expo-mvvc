@@ -1,73 +1,75 @@
+import CustomBottomSheet from '@/src/shared/components/bottom-sheet/bottom-sheet';
+import { DevModeSelector } from '@/src/shared/components/bottom-sheet/dev-mode-selector';
+import { FormButton } from '@/src/shared/components/ui/button/FormButton';
+import { FormInputController } from '@/src/shared/components/ui/form/FormInputController';
+import { PasswordInputController } from '@/src/shared/components/ui/form/PasswordInputController';
+import { Ionicons } from '@expo/vector-icons';
+import BottomSheet from '@gorhom/bottom-sheet';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
+import { useForm } from 'react-hook-form';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { FormButton } from '../../../shared/components/ui/button/FormButton';
-import { FormInput } from '../../../shared/components/ui/form/FormInput';
+import { RegisterFormValues } from '../interfaces/auth.interface';
 import { loginStyles } from '../styles/login.style';
 import { useRegister } from '../view-models/auth.view-model';
 
 export const RegisterScreen = () => {
-  // Estado del formulario
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-
-  // Estado para errores de validación local
-  const [localErrors, setLocalErrors] = useState<Record<string, string>>({});
   // ViewModel para registro
-  const { register, isLoading, formErrors, clearErrors } = useRegister();
+  const { register, isLoading } = useRegister();
 
-  // Validar formulario localmente
-  const validateForm = () => {
-    const errors: Record<string, string> = {};
+  // Referencia al bottom sheet
+  const bottomSheetRef = useRef<BottomSheet>(null);
 
-    if (!name.trim()) {
-      errors.name = 'El nombre es obligatorio';
-    }
-
-    if (!email.trim()) {
-      errors.email = 'El correo electrónico es obligatorio';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = 'Ingresa un correo electrónico válido';
-    }
-
-    if (!password) {
-      errors.password = 'La contraseña es obligatoria';
-    } else if (password.length < 6) {
-      errors.password = 'La contraseña debe tener al menos 6 caracteres';
-    }
-
-    if (password !== confirmPassword) {
-      errors.confirmPassword = 'Las contraseñas no coinciden';
-    }
-
-    setLocalErrors(errors);
-    return Object.keys(errors).length === 0;
+  // Función para abrir el bottom sheet
+  const handleOpenDevModeSheet = () => {
+    bottomSheetRef.current?.expand();
   };
+
+  // Función para cerrar el bottom sheet
+  const handleCloseDevModeSheet = () => {
+    bottomSheetRef.current?.close();
+  };
+
+  // Configurar React Hook Form
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors, isValid },
+  } = useForm<RegisterFormValues>({
+    defaultValues: {
+      username: '',
+      password: '',
+      aplicacion: 'ruteo',
+      confirmarPassword: '',
+      aceptarTerminosCondiciones: false,
+    },
+    mode: 'onChange',
+  });
+
+  // Obtener el valor actual de password para comparar con confirmPassword
+  const password = watch('password');
 
   // Manejar envío del formulario
-  const handleSubmit = () => {
-    clearErrors();
-
-    if (validateForm()) {
-      register({ name, email, password });
-    }
+  const onSubmit = (data: RegisterFormValues) => {
+    // Transformar los datos al formato esperado por el método register
+    register({
+      username: data.username,
+      password: data.password,
+      confirmarPassword: data.confirmarPassword,
+      aceptarTerminosCondiciones: data.aceptarTerminosCondiciones,
+      aplicacion: data.aplicacion,
+    });
   };
-
-  // Combinar errores locales y del servidor
-  const allErrors = { ...localErrors, ...formErrors };
-
-  // Validar formulario para habilitar/deshabilitar botón
-  const isFormValid =
-    name.trim() !== '' &&
-    email.trim() !== '' &&
-    password.trim() !== '' &&
-    confirmPassword.trim() !== '';
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      {/* Botón de modo desarrollador */}
+      <TouchableOpacity style={loginStyles.devModeButton} onPress={handleOpenDevModeSheet}>
+        <Ionicons name="settings" size={24} color="#666" className="mt-6" />
+      </TouchableOpacity>
+
       <ScrollView contentContainerStyle={loginStyles.container} keyboardShouldPersistTaps="handled">
         <View style={loginStyles.logoContainer}>
           <Image source={require('../../../../assets/images/icon.png')} style={loginStyles.logo} />
@@ -75,55 +77,58 @@ export const RegisterScreen = () => {
 
         <Text style={loginStyles.title}>Crear Cuenta</Text>
 
-        {/* Mensaje de error general */}
-        {allErrors.general && <Text style={loginStyles.errorText}>{allErrors.general}</Text>}
-
-        {/* Campo de nombre */}
-        <FormInput
-          label="Nombre completo"
-          placeholder="Ingresa tu nombre"
-          autoCapitalize="words"
-          value={name}
-          onChangeText={setName}
-          error={allErrors.name}
-        />
-
         {/* Campo de email */}
-        <FormInput
+        <FormInputController<RegisterFormValues>
+          control={control}
+          name="username"
           label="Correo electrónico"
           placeholder="Ingresa tu correo electrónico"
           keyboardType="email-address"
           autoCapitalize="none"
-          value={email}
-          onChangeText={setEmail}
-          error={allErrors.email}
+          error={errors.username}
+          rules={{
+            required: 'El correo electrónico es obligatorio',
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: 'Correo electrónico inválido',
+            },
+          }}
         />
 
         {/* Campo de contraseña */}
-        <FormInput
+        <PasswordInputController<RegisterFormValues>
+          control={control}
+          name="password"
           label="Contraseña"
           placeholder="Crea una contraseña"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          error={allErrors.password}
+          error={errors.password}
+          rules={{
+            required: 'La contraseña es obligatoria',
+            minLength: {
+              value: 6,
+              message: 'La contraseña debe tener al menos 6 caracteres',
+            },
+          }}
         />
 
         {/* Campo de confirmar contraseña */}
-        <FormInput
+        <PasswordInputController<RegisterFormValues>
+          control={control}
+          name="confirmarPassword"
           label="Confirmar contraseña"
           placeholder="Confirma tu contraseña"
-          secureTextEntry
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          error={allErrors.confirmPassword}
+          error={errors.confirmarPassword}
+          rules={{
+            required: 'Debes confirmar tu contraseña',
+            validate: (value: string) => value === password || 'Las contraseñas no coinciden',
+          }}
         />
 
         {/* Botón de registro */}
         <FormButton
           title="Registrarse"
-          onPress={handleSubmit}
-          disabled={!isFormValid}
+          onPress={handleSubmit(onSubmit)}
+          disabled={!isValid}
           isLoading={isLoading}
         />
 
@@ -139,6 +144,11 @@ export const RegisterScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Bottom Sheet para el selector de modo desarrollador */}
+      <CustomBottomSheet ref={bottomSheetRef} initialSnapPoints={['40%']}>
+        <DevModeSelector onClose={handleCloseDevModeSheet} />
+      </CustomBottomSheet>
     </SafeAreaView>
   );
 };

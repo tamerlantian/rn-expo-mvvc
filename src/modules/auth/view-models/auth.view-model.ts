@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
 import { authController } from '../controllers/auth.controller';
-import { AuthState, LoginCredentials } from '../models/Auth';
+import { AuthState, LoginCredentials, RegisterCredentials } from '../models/Auth';
 import { useToast } from '@/src/shared/hooks/use-toast.hook';
 import { ApiErrorResponse } from '@/src/core/interfaces/api.interface';
 import { useRouter } from 'expo-router';
@@ -62,34 +61,19 @@ export const useLogin = () => {
 // Hook para manejar el registro
 export const useRegister = () => {
   const queryClient = useQueryClient();
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const toast = useToast();
 
   const registerMutation = useMutation({
-    mutationFn: (userData: Omit<LoginCredentials, 'token'> & { name: string }) =>
-      authController.register(userData),
+    mutationFn: (userData: RegisterCredentials) => authController.register(userData),
     onSuccess: () => {
       // Actualizar el estado de autenticación y usuario
       queryClient.invalidateQueries({ queryKey: authKeys.session() });
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
-      setFormErrors({});
     },
     onError: (error: any) => {
       // Manejar errores de validación
-      if (error.response?.status === 400 && error.response?.data?.validaciones) {
-        const validationErrors: Record<string, string> = {};
-
-        // Mapear errores de validación del backend a campos del formulario
-        Object.entries(error.response.data.validaciones).forEach(([key, value]) => {
-          validationErrors[key] = Array.isArray(value) ? value[0] : String(value);
-        });
-
-        setFormErrors(validationErrors);
-      } else {
-        // Error general
-        setFormErrors({
-          general: error.response?.data?.mensaje || 'Error al registrar usuario',
-        });
-      }
+      const errorData = error as ApiErrorResponse;
+      toast.error(errorData?.mensaje || 'Error al iniciar sesión');
     },
   });
 
@@ -98,8 +82,6 @@ export const useRegister = () => {
     isLoading: registerMutation.isPending,
     isError: registerMutation.isError,
     error: registerMutation.error,
-    formErrors,
-    clearErrors: () => setFormErrors({}),
   };
 };
 

@@ -1,5 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LoginCredentials, LoginResponse, RefreshTokenResponse } from '../models/Auth';
+import {
+  LoginCredentials,
+  LoginResponse,
+  RefreshTokenResponse,
+  RegisterCredentials,
+} from '../models/Auth';
 import { AuthRepository } from '../repositories/auth.repository';
 import {
   AUTH_TOKEN_KEY,
@@ -29,17 +34,13 @@ export const authController = {
   },
 
   // Registrar nuevo usuario
-  register: async (
-    userData: Omit<LoginCredentials, 'token'> & { name: string },
-  ): Promise<LoginResponse> => {
+  register: async (userData: RegisterCredentials): Promise<LoginResponse> => {
     try {
       const response = await authRepository.register(userData);
-
-      // Guardar tokens y datos del usuario en el almacenamiento local
-      await AsyncStorage.setItem(AUTH_TOKEN_KEY, response.token);
-      await AsyncStorage.setItem(REFRESH_TOKEN_KEY, response['refresh-token']);
-      await AsyncStorage.setItem(USER_DATA_KEY, JSON.stringify(response.user));
-
+      await authController.login({
+        username: userData.username,
+        password: userData.password,
+      });
       return response;
     } catch (error) {
       console.error('Error en registro:', error);

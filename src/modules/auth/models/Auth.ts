@@ -6,6 +6,14 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface RegisterCredentials {
+  username: string;
+  password: string;
+  confirmarPassword: string;
+  aceptarTerminosCondiciones: boolean;
+  aplicacion: string;
+}
+
 // Interfaz para el usuario autenticado
 export interface AuthUser {
   id: number;
