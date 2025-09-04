@@ -4,6 +4,7 @@ import {
   LoginResponse,
   RefreshTokenResponse,
   RegisterCredentials,
+  RegisterResponse,
 } from '../models/Auth';
 import { AuthRepository } from '../repositories/auth.repository';
 import {
@@ -34,13 +35,9 @@ export const authController = {
   },
 
   // Registrar nuevo usuario
-  register: async (userData: RegisterCredentials): Promise<LoginResponse> => {
+  register: async (userData: RegisterCredentials): Promise<RegisterResponse> => {
     try {
       const response = await authRepository.register(userData);
-      await authController.login({
-        username: userData.username,
-        password: userData.password,
-      });
       return response;
     } catch (error) {
       console.error('Error en registro:', error);

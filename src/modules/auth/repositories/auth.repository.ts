@@ -4,6 +4,7 @@ import {
   LoginResponse,
   RefreshTokenResponse,
   RegisterCredentials,
+  RegisterResponse,
 } from '../models/Auth';
 
 /**
@@ -24,8 +25,8 @@ export class AuthRepository extends HttpBaseRepository {
    * @param userData Datos del usuario a registrar
    * @returns Promise con la respuesta del registro
    */
-  async register(userData: RegisterCredentials): Promise<LoginResponse> {
-    return this.post<LoginResponse>('seguridad/register/', userData);
+  async register(userData: RegisterCredentials): Promise<RegisterResponse> {
+    return this.post<RegisterResponse>('seguridad/usuario/nuevo/', userData);
   }
 
   /**

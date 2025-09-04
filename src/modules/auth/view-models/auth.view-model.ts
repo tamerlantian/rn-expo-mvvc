@@ -62,6 +62,7 @@ export const useLogin = () => {
 export const useRegister = () => {
   const queryClient = useQueryClient();
   const toast = useToast();
+  const router = useRouter();
 
   const registerMutation = useMutation({
     mutationFn: (userData: RegisterCredentials) => authController.register(userData),
@@ -69,9 +70,9 @@ export const useRegister = () => {
       // Actualizar el estado de autenticación y usuario
       queryClient.invalidateQueries({ queryKey: authKeys.session() });
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
+      router.replace('/(auth)/login');
     },
     onError: (error: any) => {
-      // Manejar errores de validación
       const errorData = error as ApiErrorResponse;
       toast.error(errorData?.mensaje || 'Error al iniciar sesión');
     },

@@ -7,9 +7,10 @@ import { Ionicons } from '@expo/vector-icons';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { router } from 'expo-router';
 import React, { useRef } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Checkbox from 'expo-checkbox';
 import { RegisterFormValues } from '../interfaces/auth.interface';
 import { loginStyles } from '../styles/login.style';
 import { useRegister } from '../view-models/auth.view-model';
@@ -41,7 +42,7 @@ export const RegisterScreen = () => {
     defaultValues: {
       username: '',
       password: '',
-      aplicacion: 'ruteo',
+      aplicacion: 'reddoc',
       confirmarPassword: '',
       aceptarTerminosCondiciones: false,
     },
@@ -82,7 +83,7 @@ export const RegisterScreen = () => {
           control={control}
           name="username"
           label="Correo electrónico"
-          placeholder="Ingresa tu correo electrónico"
+          placeholder="john.doe@example.com"
           keyboardType="email-address"
           autoCapitalize="none"
           error={errors.username}
@@ -100,7 +101,7 @@ export const RegisterScreen = () => {
           control={control}
           name="password"
           label="Contraseña"
-          placeholder="Crea una contraseña"
+          placeholder="**************"
           error={errors.password}
           rules={{
             required: 'La contraseña es obligatoria',
@@ -116,12 +117,45 @@ export const RegisterScreen = () => {
           control={control}
           name="confirmarPassword"
           label="Confirmar contraseña"
-          placeholder="Confirma tu contraseña"
+          placeholder="**************"
           error={errors.confirmarPassword}
           rules={{
             required: 'Debes confirmar tu contraseña',
             validate: (value: string) => value === password || 'Las contraseñas no coinciden',
           }}
+        />
+
+        {/* Checkbox para términos y condiciones */}
+        <Controller
+          control={control}
+          name="aceptarTerminosCondiciones"
+          rules={{ required: 'Debes aceptar los términos y condiciones' }}
+          render={({ field: { onChange, value } }) => (
+            <View style={loginStyles.checkboxContainer}>
+              <Checkbox
+                value={value}
+                onValueChange={onChange}
+                color={value ? '#4630EB' : undefined}
+                style={loginStyles.checkbox}
+              />
+              <View style={loginStyles.termsContainer}>
+                <Text style={loginStyles.termsText}>
+                  Acepto los{' '}
+                  <Text
+                    style={loginStyles.termsLink}
+                    onPress={() => console.log('Términos presionados')}
+                  >
+                    términos y condiciones
+                  </Text>
+                </Text>
+                {errors.aceptarTerminosCondiciones && (
+                  <Text style={loginStyles.errorText}>
+                    {errors.aceptarTerminosCondiciones.message}
+                  </Text>
+                )}
+              </View>
+            </View>
+          )}
         />
 
         {/* Botón de registro */}

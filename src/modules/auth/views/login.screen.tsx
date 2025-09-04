@@ -68,7 +68,7 @@ export const LoginScreen = () => {
           control={control}
           name="username"
           label="Correo electrónico"
-          placeholder="Ingresa tu correo electrónico"
+          placeholder="john.doe@example.com"
           keyboardType="email-address"
           autoCapitalize="none"
           error={errors.username}
@@ -86,7 +86,7 @@ export const LoginScreen = () => {
           control={control}
           name="password"
           label="Contraseña"
-          placeholder="Ingresa tu contraseña"
+          placeholder="**************"
           error={errors.password}
           rules={{
             required: 'La contraseña es obligatoria',

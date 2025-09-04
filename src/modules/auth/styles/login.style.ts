@@ -103,4 +103,27 @@ export const loginStyles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: 'rgba(245, 245, 245, 0.9)',
   },
+  // Estilos para el checkbox de términos y condiciones
+  checkboxContainer: {
+    flexDirection: 'row',
+    marginVertical: 15,
+    alignItems: 'flex-start',
+  },
+  checkbox: {
+    marginRight: 10,
+    marginTop: 2,
+  },
+  termsContainer: {
+    flex: 1,
+  },
+  termsText: {
+    fontSize: 14,
+    color: '#555',
+  },
+  termsLink: {
+    fontSize: 14,
+    color: '#007aff',
+    fontWeight: '500',
+    textDecorationLine: 'underline',
+  },
 });

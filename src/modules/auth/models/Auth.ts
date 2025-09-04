@@ -44,6 +44,10 @@ export interface LoginResponse {
   'refresh-token': string;
 }
 
+export interface RegisterResponse {
+  usuario: AuthUser;
+}
+
 // Interfaz para el estado de autenticación
 export interface AuthState {
   isAuthenticated: boolean;
