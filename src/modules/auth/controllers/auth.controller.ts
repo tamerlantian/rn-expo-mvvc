@@ -72,7 +72,7 @@ export const authController = {
   // Cerrar sesión
   logout: async (): Promise<boolean> => {
     try {
-      await authRepository.logout();
+      // await authRepository.logout();
 
       // Limpiar datos de autenticación del almacenamiento local
       await AsyncStorage.multiRemove([AUTH_TOKEN_KEY, REFRESH_TOKEN_KEY, USER_DATA_KEY]);

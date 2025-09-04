@@ -1,27 +1,40 @@
 import { useAuth } from '@/src/modules/auth/views/AuthProvider';
-import { Stack, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { Drawer } from 'expo-router/drawer';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+
+// Componente personalizado para el contenido del drawer
+function CustomDrawerContent(props: any) {
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  return (
+    <DrawerContentScrollView {...props}>
+      <DrawerItemList {...props} />
+      <TouchableOpacity
+        style={{
+          padding: 20,
+          borderTopWidth: 1,
+          borderTopColor: '#ccc',
+          marginTop: 15,
+        }}
+        onPress={handleLogout}
+      >
+        <Text style={{ color: '#1890ff', fontSize: 16, fontWeight: 'bold' }}>Cerrar Sesión</Text>
+      </TouchableOpacity>
+    </DrawerContentScrollView>
+  );
+}
 
 export default function AppLayout() {
   const { isAuthenticated, loading } = useAuth();
-  const router = useRouter();
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-
-  useEffect(() => {
-    // Only proceed when the auth state is no longer loading
-    if (!loading) {
-      if (!isAuthenticated) {
-        // If not authenticated, redirect to login
-        router.replace('/(auth)/login');
-      }
-      // Auth check completed
-      setIsCheckingAuth(false);
-    }
-  }, [isAuthenticated, loading, router]);
 
   // Show loading indicator while checking authentication
-  if (loading || isCheckingAuth) {
+  if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -35,8 +48,26 @@ export default function AppLayout() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" />
-    </Stack>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Drawer
+        screenOptions={{
+          headerShown: true,
+          drawerType: 'front',
+          drawerStyle: {
+            width: '70%',
+          },
+        }}
+        drawerContent={props => <CustomDrawerContent {...props} />}
+      >
+        <Drawer.Screen
+          name="(tabs)"
+          options={{
+            drawerLabel: 'Dashboard',
+            title: 'Dashboard',
+            headerShown: true,
+          }}
+        />
+      </Drawer>
+    </GestureHandlerRootView>
   );
 }

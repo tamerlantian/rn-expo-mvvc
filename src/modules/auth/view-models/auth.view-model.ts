@@ -89,6 +89,7 @@ export const useRegister = () => {
 // Hook para manejar el logout
 export const useLogout = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const logoutMutation = useMutation({
     mutationFn: authController.logout,
@@ -98,6 +99,7 @@ export const useLogout = () => {
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
       queryClient.setQueryData(authKeys.session(), false);
       queryClient.setQueryData(authKeys.user(), null);
+      router.replace('/(auth)/login');
     },
   });
 
