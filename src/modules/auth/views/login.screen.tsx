@@ -12,7 +12,7 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoginFormValues } from '../interfaces/auth.interface';
 import { loginStyles } from '../styles/login.style';
-import { useLogin } from '../view-models/auth.view-model';
+import { useLogin } from '../view-models/login.view-model';
 
 export const LoginScreen = () => {
   // ViewModel para login
