@@ -1,6 +1,8 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useAuthState, useLogin, useLogout } from '../view-models/auth.view-model';
+import { useAuthState } from '../view-models/auth.view-model';
 import { AuthState, LoginCredentials } from '../models/Auth';
+import { useLogin } from '../view-models/login.view-model';
+import { useLogout } from '../view-models/logout.view-model';
 
 // Interfaz para el contexto de autenticación
 interface AuthContextType extends AuthState {
