@@ -39,6 +39,15 @@ export class AuthRepository extends HttpBaseRepository {
   }
 
   /**
+   * Solicita el cambio de contraseña
+   * @param email Correo electrónico del usuario
+   * @returns Promise con la confirmación del cambio de contraseña
+   */
+  async forgotPassword(username: string): Promise<boolean> {
+    return this.post<boolean>('seguridad/usuario/cambio-clave-solicitar/', { username });
+  }
+
+  /**
    * Cierra la sesión del usuario
    * @returns Promise con la confirmación del logout
    */

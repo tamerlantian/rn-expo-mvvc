@@ -74,9 +74,9 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   status: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
-    padding: 4,
+    padding: 5,
     borderRadius: 4,
   },
   devMode: {

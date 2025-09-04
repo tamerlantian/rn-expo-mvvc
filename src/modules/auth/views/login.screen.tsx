@@ -100,9 +100,7 @@ export const LoginScreen = () => {
         <TouchableOpacity
           style={loginStyles.forgotPassword}
           onPress={() => {
-            // Comentado hasta implementar la recuperación de contraseña
-            // router.push('/auth/forgot-password');
-            console.log('Recuperación de contraseña no implementada aún');
+            router.push('/(auth)/forgot-password');
           }}
         >
           <Text style={loginStyles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>

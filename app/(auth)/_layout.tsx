@@ -18,6 +18,13 @@ export default function AuthLayout() {
           title: 'Crear Cuenta',
         }}
       />
+      <Stack.Screen
+        name="forgot-password"
+        options={{
+          headerShown: false,
+          title: 'Recuperar Contraseña',
+        }}
+      />
     </Stack>
   );
 }

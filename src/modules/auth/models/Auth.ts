@@ -62,9 +62,6 @@ export interface RefreshTokenResponse {
   refreshToken?: string;
 }
 
-// Interfaz para errores de autenticación
-export interface AuthError {
-  message: string;
-  code?: string;
-  status?: number;
-}
+export type ForgotPasswordFormValues = {
+  username: string;
+};

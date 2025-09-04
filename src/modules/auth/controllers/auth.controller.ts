@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
+  ForgotPasswordFormValues,
   LoginCredentials,
   LoginResponse,
   RefreshTokenResponse,
@@ -113,6 +114,16 @@ export const authController = {
     } catch (error) {
       console.error('Error al obtener datos del usuario:', error);
       return null;
+    }
+  },
+
+  // Solicitar recuperación de contraseña
+  forgotPassword: async (data: ForgotPasswordFormValues): Promise<boolean> => {
+    try {
+      return await authRepository.forgotPassword(data.username);
+    } catch (error) {
+      console.error('Error al solicitar recuperación de contraseña:', error);
+      throw error;
     }
   },
 };
