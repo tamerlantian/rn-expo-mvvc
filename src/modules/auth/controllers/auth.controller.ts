@@ -7,22 +7,21 @@ import {
   RegisterCredentials,
   RegisterResponse,
 } from '../models/Auth';
-import { AuthRepository } from '../repositories/auth.repository';
 import {
   AUTH_TOKEN_KEY,
   REFRESH_TOKEN_KEY,
   USER_DATA_KEY,
 } from '@/src/shared/constants/localstorage-keys';
+import { AuthRepository } from '../repositories/auth.repository';
 
 // Instancia del repositorio de autenticación
-const authRepository = new AuthRepository();
 
 // Controlador para manejar las operaciones relacionadas con autenticación
 export const authController = {
   // Realizar login de usuario
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
     try {
-      const response = await authRepository.login(credentials);
+      const response = await AuthRepository.getInstance().login(credentials);
 
       // Guardar tokens y datos del usuario en el almacenamiento local
       await AsyncStorage.setItem(AUTH_TOKEN_KEY, response.token);
@@ -38,7 +37,7 @@ export const authController = {
   // Registrar nuevo usuario
   register: async (userData: RegisterCredentials): Promise<RegisterResponse> => {
     try {
-      const response = await authRepository.register(userData);
+      const response = await AuthRepository.getInstance().register(userData);
       return response;
     } catch (error) {
       console.error('Error en registro:', error);
@@ -55,7 +54,7 @@ export const authController = {
         return null;
       }
 
-      const response = await authRepository.refreshToken(refreshToken);
+      const response = await AuthRepository.getInstance().refreshToken(refreshToken);
 
       // Actualizar token en almacenamiento local
       await AsyncStorage.setItem(AUTH_TOKEN_KEY, response.token);
@@ -120,7 +119,7 @@ export const authController = {
   // Solicitar recuperación de contraseña
   forgotPassword: async (data: ForgotPasswordFormValues): Promise<boolean> => {
     try {
-      return await authRepository.forgotPassword(data.username);
+      return await AuthRepository.getInstance().forgotPassword(data.username);
     } catch (error) {
       console.error('Error al solicitar recuperación de contraseña:', error);
       throw error;
